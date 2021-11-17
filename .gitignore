@@ -2,3 +2,5 @@ build
 devel
 pcd_files
 .idea
+log
+install

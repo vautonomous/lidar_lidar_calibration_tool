@@ -1,0 +1,7 @@
+---
+/**:
+  ros__parameters:
+
+    path_pcd_folder: "/home/goktug/projects/point_cloud_aligner_ws/src/point_cloud_aligner/pcd_files/isuzu"
+    topic_name_target: "/lidar_front/velodyne_points"
+    topic_name_source: "/lidar_right/velodyne_points"
