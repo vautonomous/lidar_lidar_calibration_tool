@@ -12,6 +12,13 @@
 #include <pcl/filters/project_inliers.h>
 #include <pcl/filters/impl/project_inliers.hpp>
 
+#include <message_filters/subscriber.h>
+#include <message_filters/time_synchronizer.h>
+#include <message_filters/synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
+#include <message_filters/time_synchronizer.h>
+#include <ros/package.h>
+
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -36,8 +43,6 @@ class PointCloudAligner {
   ros::Publisher pub_cloud_stitched_;
   ros::Publisher pub_cloud_plane_source_;
   ros::Publisher pub_cloud_plane_target_;
-
-  bool test;
 
   // MODE 0 - Visual Alignment:
   void CallbackVisualAlignment(point_cloud_aligner::Trans6Config &config, uint32_t level);
@@ -71,17 +76,26 @@ class PointCloudAligner {
   std::vector<std::string> path_pcd_source_list;
   ros::Timer timer_pc_publisher_;
 
-  bool is_optimization_done;
   std::vector<Eigen::Affine3d> vector_trans_optimized;
 
-  // Test:
-  std::vector<std::string> vector_path_test_pcd;
-  std::vector<double> param_right_to_middle;
-  std::vector<double> param_left_to_middle;
 
-  ros::Publisher pub_cloud_middle;
-  ros::Publisher pub_cloud_right_transformed;
-  ros::Publisher pub_cloud_left_transformed;
+  std::string topic_name_target;
+  std::string topic_name_source;
+  typedef message_filters::Subscriber<sensor_msgs::PointCloud2> msg_target_;
+  typedef message_filters::Subscriber<sensor_msgs::PointCloud2> msg_source_;
+  std::shared_ptr<msg_target_> sub_lid_target_;
+  std::shared_ptr<msg_source_> sub_lid_source_;
+  typedef message_filters::sync_policies::ApproximateTime<
+      sensor_msgs::PointCloud2,
+      sensor_msgs::PointCloud2> ApproxTime;
+  typedef message_filters::Synchronizer<ApproxTime> msg_synchronizer_;
+  std::shared_ptr<msg_synchronizer_> synchronizer_;
+  void CallbackSaveData(const sensor_msgs::PointCloud2ConstPtr& msg_target,
+                        const sensor_msgs::PointCloud2ConstPtr& msg_source);
+
+  int mode;
+  std::string path_pcd_folder;
+
 
 
 

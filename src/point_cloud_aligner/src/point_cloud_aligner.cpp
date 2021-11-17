@@ -5,26 +5,34 @@ PointCloudAligner::PointCloudAligner(ros::NodeHandle &nh)
     : nh_(nh), cloud_target(new Cloud), cloud_source(new Cloud),
       cloud_stitched(new Cloud),
       cloud_aligned(new Cloud), cloud_plane_points_source(new Cloud),
-      cloud_plane_points_target(new Cloud), is_optimization_done(false),
-      pair_id(0) {
+      cloud_plane_points_target(new Cloud),
+      pair_id(0), mode(0) {
 
-  nh_.getParam("test", test);
   nh_.getParam("path_pcd_target_list", path_pcd_target_list);
   nh_.getParam("path_pcd_source_list", path_pcd_source_list);
-  nh_.getParam("initial_dx", transform_handler_.initial_transform_params.dx);
-  nh_.getParam("initial_dy", transform_handler_.initial_transform_params.dy);
-  nh_.getParam("initial_dz", transform_handler_.initial_transform_params.dz);
-  nh_.getParam("initial_yaw", transform_handler_.initial_transform_params.yaw);
-  nh_.getParam("initial_pitch", transform_handler_.initial_transform_params.pitch);
-  nh_.getParam("initial_roll", transform_handler_.initial_transform_params.roll);
+  nh_.getParam("topic_name_target", topic_name_target);
+  nh_.getParam("topic_name_source", topic_name_source);
+  nh_.getParam("mode", mode);
+  nh_.getParam("path_pcd_folder", path_pcd_folder);
 
-  nh_.getParam("param_right_to_middle", param_right_to_middle);
-  nh_.getParam("param_left_to_middle", param_left_to_middle);
-  nh_.getParam("path_test_pcd", vector_path_test_pcd);
 
-  if (!test) {
+  if (mode == 0)
+  {
+    // Sample Saving Mode
+    sub_lid_target_ = std::make_shared<msg_target_>(nh_, topic_name_target, 10);
+    sub_lid_source_ = std::make_shared<msg_target_>(nh_, topic_name_source, 10);
+    synchronizer_ = std::make_shared<msg_synchronizer_>(ApproxTime(10),
+                                                        *sub_lid_target_,
+                                                        *sub_lid_source_);
+    synchronizer_->registerCallback(boost::bind(&PointCloudAligner::CallbackSaveData,
+                                                this,
+                                                _1, _2));
+  } // eof Sample Saving Mode
+
+  if (mode == 1)
+  {
+    // Calibration Mode:
     sub_key_ = nh_.subscribe("/key", 30, &PointCloudAligner::KeyCallback, this);
-
     pub_cloud_source_ = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_source", 1, this);
     pub_cloud_aligned_ = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_aligned", 1, this);
     pub_cloud_target_ = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_target", 1, this);
@@ -37,102 +45,51 @@ PointCloudAligner::PointCloudAligner(ros::NodeHandle &nh)
     timer_pc_publisher_ = nh_.createTimer(ros::Duration(1),
                                           &PointCloudAligner::CallbackPublishCloud,
                                           this);
-
     sub_clicked_point_ = nh_.subscribe("/rviz_selected_points",
                                        30, &PointCloudAligner::CallbackClickedPoint,
                                        this);
 
     f = boost::bind(&PointCloudAligner::CallbackVisualAlignment, this, _1, _2);
-
     srv.setCallback(f);
 
-
-    Eigen::Affine3d trans_first_refinement;
-    trans_first_refinement.setIdentity();
-    vector_trans_optimized.push_back(trans_first_refinement);
-
-  } else {
-
-    Eigen::Affine3d tf;
-    tf.setIdentity();
-    Eigen::Quaterniond q = {0.996732, -0.00242802, -0.000187559, -0.0807386};
-    tf.linear() = q.toRotationMatrix();
-    tf.translation() = Eigen::Vector3d {0.0867071, -1.19197, -2.27943};
-
-    std::string id = "b3";
-    std::string path_target = "/home/goktug/projects/lidar_lidar_calibration_tool_new/src/lidar_lidar_calibration_tool/pcd_files/otokar/01_and_05_stitched/" + id + ".pcd";
-    std::string path_source = "/home/goktug/projects/lidar_lidar_calibration_tool_new/src/lidar_lidar_calibration_tool/pcd_files/otokar/02_to_05/" + id + "/0_source_cloud.pcd";
-
-    Cloud::Ptr cloud_target_(new Cloud);
-    Cloud::Ptr cloud_source_(new Cloud);
-    Cloud::Ptr cloud_aligned_(new Cloud);
-    Cloud::Ptr cloud_stitched_(new Cloud);
-
-    pcl::io::loadPCDFile<Point>(path_target, *cloud_target_);
-    pcl::io::loadPCDFile<Point>(path_source, *cloud_source_);
-    TransformHandler::transform_point_cloud(cloud_source_, cloud_aligned_, tf);
-
-    *cloud_stitched_ += *cloud_target_ + *cloud_aligned_;
-
-    std::string file_name = "/home/goktug/Desktop/" + id + ".pcd";
-    pcl::io::savePCDFile(file_name,*cloud_stitched_);
+  }  // eof Calibration Mode
 
 
-    /*std::cout << "Test is started." << std::endl;
-    pub_cloud_middle = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_middle", 1, this);
-    pub_cloud_right_transformed = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_right_transformed", 1, this);
-    pub_cloud_left_transformed = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_left_transformed", 1, this);
+  Eigen::Affine3d trans_first_refinement;
+  trans_first_refinement.setIdentity();
+  vector_trans_optimized.push_back(trans_first_refinement);
 
-    Cloud::Ptr cloud_middle(new Cloud);
-    Cloud::Ptr cloud_right(new Cloud);
-    Cloud::Ptr cloud_right_transformed(new Cloud);
-    Cloud::Ptr cloud_left(new Cloud);
-    Cloud::Ptr cloud_left_transformed(new Cloud);
-
-    pcl::io::loadPCDFile<Point>(vector_path_test_pcd[0], *cloud_middle);
-    pcl::io::loadPCDFile<Point>(vector_path_test_pcd[1], *cloud_right);
-    pcl::io::loadPCDFile<Point>(vector_path_test_pcd[2], *cloud_left);
-
-    Eigen::Affine3d trans_right_to_middle;
-    trans_right_to_middle.setIdentity();
-    Eigen::Quaterniond q_right_to_middle = {param_right_to_middle[6], param_right_to_middle[3],
-                                            param_right_to_middle[4], param_right_to_middle[5]};
-    trans_right_to_middle.linear() = q_right_to_middle.toRotationMatrix();
-    trans_right_to_middle.translation() = Eigen::Vector3d{param_right_to_middle[0],
-                                                          param_right_to_middle[1],
-                                                          param_right_to_middle[2]};
-
-    Eigen::Affine3d trans_left_to_middle;
-    trans_left_to_middle.setIdentity();
-    Eigen::Quaterniond q_left_to_middle = {param_left_to_middle[6], param_left_to_middle[3],
-                                           param_left_to_middle[4], param_left_to_middle[5]};
-    trans_left_to_middle.linear() = q_left_to_middle.toRotationMatrix();
-    trans_left_to_middle.translation() = Eigen::Vector3d{param_left_to_middle[0],
-                                                         param_left_to_middle[1],
-                                                         param_left_to_middle[2]};
-
-    TransformHandler::transform_point_cloud(cloud_right,
-                                            cloud_right_transformed,
-                                            trans_right_to_middle);
-
-    TransformHandler::transform_point_cloud(cloud_left,
-                                            cloud_left_transformed,
-                                            trans_left_to_middle);
-
-    for (size_t i = 0; i < 2000; i++) {
-      PublishCloud(pub_cloud_middle, cloud_middle, "target_frame");
-      PublishCloud(pub_cloud_left_transformed, cloud_left_transformed, "target_frame");
-      PublishCloud(pub_cloud_right_transformed, cloud_right_transformed, "target_frame");
-      std::chrono::milliseconds timespan(2000);
-      std::this_thread::sleep_for(timespan);
-    }*/
+}
 
 
+void
+PointCloudAligner::CallbackSaveData(const sensor_msgs::PointCloud2ConstPtr &msg_target,
+                                             const sensor_msgs::PointCloud2ConstPtr &msg_source) {
+  std::cout << "Message id: " << pair_id << std::endl;
 
+  // Show time difference:
+  std::cout << "Time diff: " << (msg_target->header.stamp - msg_source->header.stamp).toSec() << "s" << std::endl;
+  // Make cloud message pcl type
+  Cloud::Ptr cloud_target(new Cloud);
+  pcl::fromROSMsg(*msg_target, *cloud_target);
+  Cloud::Ptr cloud_source(new Cloud);
+  pcl::fromROSMsg(*msg_source, *cloud_source);
 
-  }
+  std::string pcd_path_target = path_pcd_folder + "/" + std::to_string(pair_id) + "_target.pcd";
+  cloud_target->width = cloud_target->size();
+  cloud_target->height = 1;
+  cloud_target->is_dense = false;
+  cloud_target->header.frame_id = "target_frame";
+  pcl::io::savePCDFile(pcd_path_target, *cloud_target, false);
 
+  std::string pcd_path_source = path_pcd_folder + "/" + std::to_string(pair_id) + "_source.pcd";
+  cloud_source->width = cloud_source->size();
+  cloud_source->height = 1;
+  cloud_source->is_dense = false;
+  cloud_source->header.frame_id = "target_frame";
+  pcl::io::savePCDFile(pcd_path_source, *cloud_source, false);
 
+  pair_id++;
 }
 
 void
@@ -162,7 +119,7 @@ PointCloudAligner::KeyCallback(
   }
 
   // press 'p' : previous
-  if (msg->data == 112 and pair_id!=0) {
+  if (msg->data == 112 and pair_id != 0) {
     std::cout << "\nPrevious pair." << std::endl;
     pair_id--;
     std::cout << path_pcd_target_list[pair_id] << std::endl;
@@ -210,9 +167,6 @@ PointCloudAligner::KeyCallback(
               " " << q_total.x() << " " << q_total.y() << " " << q_total.z() << " " <<
               q_total.w() << std::endl;
 
-
-
-
     vector_plane_coeff_target.clear();
     vector_plane_points_source.clear();
     cloud_plane_points_target->points.clear();
@@ -225,7 +179,6 @@ PointCloudAligner::CallbackPublishCloud(const ros::TimerEvent &) {
 
   pcl::io::loadPCDFile<Point>(path_pcd_target_list[pair_id], *cloud_target);
   pcl::io::loadPCDFile<Point>(path_pcd_source_list[pair_id], *cloud_source);
-
 
   Cloud::Ptr cloud_tmp(new Cloud);
   TransformHandler::transform_point_cloud(cloud_source,

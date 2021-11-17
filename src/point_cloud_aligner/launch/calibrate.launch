@@ -6,96 +6,28 @@
 
     <node type="rviz" name="rviz" pkg="rviz" args="-d $(find point_cloud_aligner)/rviz/config.rviz" />
 
-    <param name="initial_dx"
-           value="0"/>
-    <param name="initial_dy"
-           value="0"/>
-    <param name="initial_dz"
-           value="0"/>
-    <param name="initial_yaw"
-           value="0"/>
-    <param name="initial_pitch"
-           value="0"/>
-    <param name="initial_roll"
-           value="0"/>
+    <!-- Params for pcd extraction mode: 0  -->
+    <param name="mode"  value="1"/>
+    <param name="topic_name_target"  value="/middle/velodyne_points"/>
+    <param name="topic_name_source"  value="/right/velodyne_points"/>
+    <param name="path_pcd_folder"
+           value="/home/goktug/projects/point_cloud_aligner_ws/src/point_cloud_aligner/pcd_files/deneme"/>
 
+
+    <!-- Params for calibration mode: 1  -->
     <rosparam param="path_pcd_target_list">
         [
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/0_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/1_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/2_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/3_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/4_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/5_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/6_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/7_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/8_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/9_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/10_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/11_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/12_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/13_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/14_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/15_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/16_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/17_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/18_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/19_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/100_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/101_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/102_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/103_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/104_cam.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/105_cam.pcd"
+        "/home/goktug/projects/lidar_lidar_calibration_tool_new/src/lidar_lidar_calibration_tool/pcd_files/otokar/01_to_05/t1/0_target_cloud.pcd"
         ]
     </rosparam>
 
     <rosparam param="path_pcd_source_list">
         [
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/0_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/1_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/2_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/3_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/4_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/5_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/6_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/7_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/8_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/9_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/10_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/11_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/12_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/13_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/14_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/15_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/16_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/17_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/18_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/19_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/100_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/101_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/102_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/103_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/104_lid.pcd",
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/105_lid.pcd"
+        "/home/goktug/projects/lidar_lidar_calibration_tool_new/src/lidar_lidar_calibration_tool/pcd_files/otokar/01_to_05/t1/0_source_cloud.pcd"
         ]
     </rosparam>
 
-
-    <param name="test"  value="false"/>
-    <rosparam param="path_test_pcd">
-        [
-        "/home/goktug/projects/leo_drive_camera_lidar_calibration_tool/src/extrinsic_calibrator/output_folder/105_lid.pcd"
-        ]
-    </rosparam>
-    <rosparam param="param_right_to_middle">
-        [-0.152037, -1.19279, 0.422568, -0.0145395, -0.101813, 0.279468, 0.954631]
-    </rosparam>
-    <rosparam param="param_left_to_middle">
-        [-0.239275, 1.26464 ,0.41834 ,0.0329382, -0.0922645 ,-0.275726 ,0.956231]
-    </rosparam>
-
-
+    <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui"/>
 
 
 </launch>

@@ -53,12 +53,12 @@ Visualization Manager:
       Value: false
     - Alpha: 1
       Class: rviz/Axes
-      Enabled: false
+      Enabled: true
       Length: 50
       Name: Axes
       Radius: 0.10000000149011612
       Reference Frame: <Fixed Frame>
-      Value: false
+      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -79,7 +79,7 @@ Visualization Manager:
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
-      Size (Pixels): 10
+      Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Points
       Topic: /cloud_target
@@ -348,7 +348,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 9.688589096069336
+      Distance: 35.61881637573242
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -356,17 +356,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.43571585416793823
-        Y: -8.855547904968262
-        Z: 1.504194736480713
+        X: -0.9375995397567749
+        Y: -5.282715320587158
+        Z: -0.35025668144226074
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.23979759216308594
+      Pitch: 0.9847968816757202
       Target Frame: <Fixed Frame>
-      Yaw: 1.5153898000717163
+      Yaw: 2.690396547317505
     Saved: ~
 Window Geometry:
   Displays:
