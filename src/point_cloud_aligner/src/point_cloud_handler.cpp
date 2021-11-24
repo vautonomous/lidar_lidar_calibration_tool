@@ -88,7 +88,15 @@ PointCloudHandler::Points2Plane(
   float max_y = *std::max_element(y_values.begin(), y_values.end());
   float min_z = *std::min_element(z_values.begin(), z_values.end());
   float max_z = *std::max_element(z_values.begin(), z_values.end());
-  float epsilon = 0.15;
+  
+  float diff_x = max_x - min_x;
+  float diff_y = max_y - min_y;
+  float diff_z = max_z - min_z;
+
+float ratio = 4;
+float epsilon_x = diff_x / ratio;
+float epsilon_y = diff_y / ratio;
+float epsilon_z = diff_z / ratio;
 
   Cloud::Ptr cloud_random_points(new Cloud);
 
@@ -112,11 +120,11 @@ PointCloudHandler::Points2Plane(
         point.y = y_temp;
         point.z = z_temp;
         cloud_random_points->points.push_back(point);
-        z_temp += epsilon;
+        z_temp += epsilon_z;
       }
-      y_temp += epsilon;
+      y_temp += epsilon_y;
     }
-    x_temp += epsilon;
+    x_temp += epsilon_x;
   }
 
   Cloud::Ptr cloud_projected(new Cloud);

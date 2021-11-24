@@ -242,7 +242,7 @@ PointToPlaneSolver::solve()
   ga_obj.problem_mode=EA::GA_MODE::SOGA;
   ga_obj.multi_threading=true;
   ga_obj.verbose=false;
-  ga_obj.population=5000;
+  ga_obj.population=500;
   ga_obj.generation_max=10000;
   ga_obj.calculate_SO_total_fitness=calculate_SO_total_fitness;
   ga_obj.init_genes=init_genes;

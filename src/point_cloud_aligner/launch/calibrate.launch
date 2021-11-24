@@ -17,13 +17,27 @@
     <!-- Params for calibration mode: 1  -->
     <rosparam param="path_pcd_target_list">
         [
-        "/home/goktug/projects/lidar_lidar_calibration_tool_new/src/lidar_lidar_calibration_tool/pcd_files/otokar/01_to_05/t1/0_target_cloud.pcd"
+        "/home/goktug/pcd_files/isuzu/k1/0_target.pcd",
+        "/home/goktug/pcd_files/isuzu/k2/0_target.pcd",
+        "/home/goktug/pcd_files/isuzu/k3/0_target.pcd",
+        "/home/goktug/pcd_files/isuzu/d1/0_target.pcd",
+        "/home/goktug/pcd_files/isuzu/d2/0_target.pcd",
+        "/home/goktug/pcd_files/isuzu/d3/0_target.pcd",
+        "/home/goktug/pcd_files/isuzu/d4/0_target.pcd",
+        "/home/goktug/pcd_files/isuzu/d5/0_target.pcd"
         ]
     </rosparam>
 
     <rosparam param="path_pcd_source_list">
         [
-        "/home/goktug/projects/lidar_lidar_calibration_tool_new/src/lidar_lidar_calibration_tool/pcd_files/otokar/01_to_05/t1/0_source_cloud.pcd"
+        "/home/goktug/pcd_files/isuzu/k1/0_source.pcd",
+        "/home/goktug/pcd_files/isuzu/k2/0_source.pcd",
+        "/home/goktug/pcd_files/isuzu/k3/0_source.pcd",
+        "/home/goktug/pcd_files/isuzu/d1/0_source.pcd",
+        "/home/goktug/pcd_files/isuzu/d2/0_source.pcd",
+        "/home/goktug/pcd_files/isuzu/d3/0_source.pcd",
+        "/home/goktug/pcd_files/isuzu/d4/0_source.pcd",
+        "/home/goktug/pcd_files/isuzu/d5/0_source.pcd"
         ]
     </rosparam>
 

@@ -166,6 +166,9 @@ PointCloudAligner::KeyCallback(
               trans_refinement_all.translation().y() << " " << trans_refinement_all.translation().z() <<
               " " << q_total.x() << " " << q_total.y() << " " << q_total.z() << " " <<
               q_total.w() << std::endl;
+              
+    Eigen::Vector3d ea = rot_total.eulerAngles(0, 1, 2); 
+    std::cout << "roll: " << ea(0)*57.29577 << " pitch: " << ea(1)*57.29577 << " yaw: " << ea(2)*57.29577 << std::endl;
 
     vector_plane_coeff_target.clear();
     vector_plane_points_source.clear();
