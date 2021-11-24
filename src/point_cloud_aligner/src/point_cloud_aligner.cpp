@@ -1,6 +1,9 @@
 
 #include "point_cloud_aligner.h"
 
+using namespace std::this_thread; // sleep_for, sleep_until
+using namespace std::chrono; // nanoseconds, system_clock, seconds
+
 PointCloudAligner::PointCloudAligner(ros::NodeHandle &nh)
     : nh_(nh), cloud_target(new Cloud), cloud_source(new Cloud),
       cloud_stitched(new Cloud),
@@ -14,6 +17,34 @@ PointCloudAligner::PointCloudAligner(ros::NodeHandle &nh)
   nh_.getParam("topic_name_source", topic_name_source);
   nh_.getParam("mode", mode);
   nh_.getParam("path_pcd_folder", path_pcd_folder);
+
+
+/*
+  pub_cloud_aligned_ = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_aligned", 1, this);
+  pub_cloud_target_ = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_target", 1, this);
+  std::string target_path = "/home/goktug/pcd_files/isuzu/d2/0_target.pcd";
+  std::string source_path = "/home/goktug/pcd_files/isuzu/d2/0_source.pcd";
+  Cloud::Ptr cloud_t(new Cloud);
+  Cloud::Ptr cloud_s(new Cloud);
+  pcl::io::loadPCDFile<Point>(target_path, *cloud_t);
+  pcl::io::loadPCDFile<Point>(source_path, *cloud_s);
+  Eigen::Quaterniond q = {0.956709, 0.032233, -0.0909166, -0.274596 };
+  Eigen::Affine3d tf;
+  tf.setIdentity();
+  tf.linear() = q.toRotationMatrix();
+  tf.translation() = Eigen::Vector3d {-0.209462, 1.27408, 0.40718};
+  pcl::transformPointCloud(*cloud_s, *cloud_s, tf);
+  Cloud::Ptr cloud_stitched(new Cloud);
+  *cloud_stitched += *cloud_s + *cloud_t;
+  for (size_t i=0; i<1000000; i++)
+  {
+    sleep_until(system_clock::now() + seconds(1));
+    PublishCloud(pub_cloud_aligned_, cloud_s,"target_frame");
+    PublishCloud(pub_cloud_target_, cloud_t,"target_frame");
+  }
+*/
+
+
 
 
   if (mode == 0)
