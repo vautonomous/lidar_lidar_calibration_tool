@@ -25,8 +25,8 @@ PCDExtractorNode::PCDExtractorNode()
   topic_name_source = param_topic_name_source.as_string();
   std::cout << topic_name_source << std::endl;
 
-  m_sub_target_cloud.subscribe(this,"/lidar_front/velodyne_points",rclcpp::QoS(100).get_rmw_qos_profile());
-  m_sub_source_cloud.subscribe(this,"/lidar_left/velodyne_points", rclcpp::QoS(100).get_rmw_qos_profile());
+  m_sub_target_cloud.subscribe(this,topic_name_target,rclcpp::QoS(100).get_rmw_qos_profile());
+  m_sub_source_cloud.subscribe(this,topic_name_source, rclcpp::QoS(100).get_rmw_qos_profile());
   my_synchronizer = std::make_unique<message_filters::Synchronizer<SyncPolicyT>>(
       SyncPolicyT(30), m_sub_target_cloud, m_sub_source_cloud);
   my_synchronizer->registerCallback(
