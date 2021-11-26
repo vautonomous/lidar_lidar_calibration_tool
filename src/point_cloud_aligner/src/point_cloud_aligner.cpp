@@ -18,34 +18,11 @@ PointCloudAligner::PointCloudAligner(ros::NodeHandle &nh)
   nh_.getParam("mode", mode);
   nh_.getParam("path_pcd_folder", path_pcd_folder);
 
-
-/*
-  pub_cloud_aligned_ = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_aligned", 1, this);
-  pub_cloud_target_ = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_target", 1, this);
-  std::string target_path = "/home/goktug/pcd_files/isuzu/d2/0_target.pcd";
-  std::string source_path = "/home/goktug/pcd_files/isuzu/d2/0_source.pcd";
-  Cloud::Ptr cloud_t(new Cloud);
-  Cloud::Ptr cloud_s(new Cloud);
-  pcl::io::loadPCDFile<Point>(target_path, *cloud_t);
-  pcl::io::loadPCDFile<Point>(source_path, *cloud_s);
-  Eigen::Quaterniond q = {0.956709, 0.032233, -0.0909166, -0.274596 };
-  Eigen::Affine3d tf;
-  tf.setIdentity();
-  tf.linear() = q.toRotationMatrix();
-  tf.translation() = Eigen::Vector3d {-0.209462, 1.27408, 0.40718};
-  pcl::transformPointCloud(*cloud_s, *cloud_s, tf);
-  Cloud::Ptr cloud_stitched(new Cloud);
-  *cloud_stitched += *cloud_s + *cloud_t;
-  for (size_t i=0; i<1000000; i++)
-  {
-    sleep_until(system_clock::now() + seconds(1));
-    PublishCloud(pub_cloud_aligned_, cloud_s,"target_frame");
-    PublishCloud(pub_cloud_target_, cloud_t,"target_frame");
-  }
-*/
-
-
-
+  nh_.getParam("path_target_cloud", path_target_cloud);
+  nh_.getParam("path_source_cloud", path_source_cloud);
+  nh_.getParam("path_output_file", path_output_file);
+  nh_.getParam("q_optimized",vector_q_param);
+  nh_.getParam("trans_optimized",vector_trans_param);
 
   if (mode == 0)
   {
@@ -60,7 +37,7 @@ PointCloudAligner::PointCloudAligner(ros::NodeHandle &nh)
                                                 _1, _2));
   } // eof Sample Saving Mode
 
-  if (mode == 1)
+  else if (mode == 1)
   {
     // Calibration Mode:
     sub_key_ = nh_.subscribe("/key", 30, &PointCloudAligner::KeyCallback, this);
@@ -85,11 +62,31 @@ PointCloudAligner::PointCloudAligner(ros::NodeHandle &nh)
 
   }  // eof Calibration Mode
 
+  // PointCloud stitching mode
+  else if (mode == 2)
+  {
+    std::cout << path_target_cloud << std::endl;
+    std::cout << path_source_cloud << std::endl;
+    std::cout << path_output_file << std::endl;
+    pcl::io::loadPCDFile<Point>(path_target_cloud, *cloud_target);
+    pcl::io::loadPCDFile<Point>(path_source_cloud, *cloud_source);
+    Eigen::Affine3d tf;
+    tf.setIdentity();
+    Eigen::Quaterniond q = {vector_q_param[3], vector_q_param[0], vector_q_param[1], vector_q_param[2]};
+    std::cout << "qx: " << q.x() << " qy: " << q.y() << " qz: " << q.z() << " qw: "<< q.w() << std::endl;
+    tf.linear() = q.toRotationMatrix();
+    tf.translation() = Eigen::Vector3d {vector_trans_param[0], vector_trans_param[1], vector_trans_param[2]};
+    std::cout << "dx: " << tf.translation().x()
+    << "dy: " << tf.translation().y() << "  dz:" << tf.translation().z() << std::endl;
+    pcl::transformPointCloud(*cloud_source, *cloud_source, tf);
+    *cloud_stitched += *cloud_target + *cloud_source;
+    pcl::io::savePCDFile(path_output_file,*cloud_stitched);
+    std::cout << "Stitched point cloud is saved." << std::endl;
+  } // eof stitching mode
 
   Eigen::Affine3d trans_first_refinement;
   trans_first_refinement.setIdentity();
   vector_trans_optimized.push_back(trans_first_refinement);
-
 }
 
 

@@ -44,7 +44,7 @@ class PointCloudAligner {
   ros::Publisher pub_cloud_plane_source_;
   ros::Publisher pub_cloud_plane_target_;
 
-  // MODE 0 - Visual Alignment:
+
   void CallbackVisualAlignment(point_cloud_aligner::Trans6Config &config, uint32_t level);
   dynamic_reconfigure::Server<point_cloud_aligner::Trans6Config> srv;
   dynamic_reconfigure::Server<point_cloud_aligner::Trans6Config>::CallbackType f;
@@ -96,8 +96,11 @@ class PointCloudAligner {
   int mode;
   std::string path_pcd_folder;
 
-
-
+  std::string path_target_cloud;
+  std::string path_source_cloud;
+  std::string path_output_file;
+  std::vector<double> vector_q_param;
+  std::vector<double> vector_trans_param;
 
 };
 

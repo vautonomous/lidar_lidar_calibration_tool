@@ -2,12 +2,12 @@
 
     <node pkg="point_cloud_aligner" type="point_cloud_aligner_exe" name="point_cloud_aligner" output="screen"></node>
     <node pkg="point_cloud_aligner" type="keyboard_publisher_exe" name="keyboard_publisher" output="screen"></node>
-
-
     <node type="rviz" name="rviz" pkg="rviz" args="-d $(find point_cloud_aligner)/rviz/config.rviz" />
+    <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui"/>
+
+    <param name="mode"  value="2"/>
 
     <!-- Params for pcd extraction mode: 0  -->
-    <param name="mode"  value="1"/>
     <param name="topic_name_target"  value="/middle/velodyne_points"/>
     <param name="topic_name_source"  value="/right/velodyne_points"/>
     <param name="path_pcd_folder"
@@ -41,7 +41,17 @@
         ]
     </rosparam>
 
-    <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui"/>
+    <!-- Params for PointCloud stitching mode: 2  -->
+    <param name="path_target_cloud"  value="/home/goktug/pcd_files/isuzu/d1/0_target.pcd"/>
+    <param name="path_source_cloud"  value="/home/goktug/pcd_files/isuzu/d1/0_source.pcd"/>
+    <param name="path_output_file"  value="/home/goktug/pcd_files/isuzu/d1/stitched.pcd"/>
+    <!--  Quaternion order: qx, qy, qz, qw  -->
+    <rosparam param="q_optimized">
+        [0.032233, -0.0909166, -0.274596, 0.956709]
+    </rosparam>
+    <rosparam param="trans_optimized">
+        [-0.209462, 1.27408, 0.42718]
+    </rosparam>
 
 
 </launch>
